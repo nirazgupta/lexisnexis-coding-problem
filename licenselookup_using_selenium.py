@@ -16,6 +16,7 @@ from selenium.common.exceptions import TimeoutException
 
 
 """
+
 This script is developed to scrape the license information of Pharmacist whole last name begins with L.
 The script performs following steps to scrape the data.
 1. Simulate interaction with the webpage to fill form with parameters.
@@ -45,7 +46,6 @@ Libraries used:
     * send request to url including the relevant header, cookie, viewstate information.
 
 5. JSON - The json library is used to save the data to file.
-
 
 """
 
@@ -87,12 +87,21 @@ class Browser:
     """
     Blueprint to define a browser object using selenium library.
     """
-    def __init__(self, url, licenseType, lastName):
+    def __init__(self, url, licenseType=None, licenseNo=None, licenseStatus=None, firstName=None, lastName=None,
+                 city=None, state=None, county=None, zipcode=None):
+
         option = webdriver.ChromeOptions()
         option.add_argument("--incognito")
         self.url = url
         self.licenseType = licenseType
+        self.licenseNo = licenseNo
+        self.licenseStatus = licenseStatus
+        self.firstName = firstName
         self.lastName = lastName
+        self.city = city
+        self.state = state
+        self.county = county
+        self.zipcode = zipcode
         self.browser = webdriver.Chrome(executable_path=chromedriverpath, chrome_options=option)
         self.browser.get(url)
         
@@ -107,11 +116,43 @@ class Browser:
 
     def get_page_source(self):
         """Funtion to fill the form, search the page and return the page source."""
-        licenseType = self.browser.find_element_by_id("t_web_lookup__license_type_name") 
-        licenseType.send_keys("Pharmacist")
+        
+        if self.licenseType:
+            licenseType = self.browser.find_element_by_id("t_web_lookup__license_type_name") 
+            licenseType.send_keys(self.licenseType.lower())
 
-        lastName = self.browser.find_element_by_id("t_web_lookup__last_name") 
-        lastName.send_keys("L")
+        if self.licenseNo:
+            licenseNo = self.browser.find_element_by_id("t_web_lookup__license_no")
+            licenseNo.send_keys(self.licenseNo)
+
+        if self.licenseStatus:
+            licenseStatus = self.browser.find_element_by_id("t_web_lookup__license_status_name")
+            licenseStatus.send_keys(self.licenseStatus.lower())
+
+        if self.firstName:
+            firstName = self.browser.find_element_by_id("t_web_lookup__first_name")
+            firstName.send_keys(self.firstName.lower())
+
+        if self.lastName:
+            lastName = self.browser.find_element_by_id("t_web_lookup__last_name") 
+            lastName.send_keys(self.lastName.lower())
+
+        if self.city:
+            city = self.browser.find_element_by_id("t_web_lookup__addr_city")
+            city.send_keys(self.city.lower())
+
+        if self.state:
+            state = self.browser.find_element_by_id("t_web_lookup__addr_state")
+            state.send_keys(self.state.lower())
+
+        if self.county:
+            county = self.browser.find_element_by_id("t_web_lookup__addr_county")
+            county.send_keys(self.county.lower())
+
+        if self.zipcode:
+            zipcode = self.browser.find_element_by_id("t_web_lookup__addr_zipcode")
+            zipcode.send_keys(self.zipcode)
+
         self.browser.find_element_by_name("sch_button").click()
 
         seleniumHtml = self.browser.page_source
@@ -247,9 +288,36 @@ def get_license_details(url, urlSuffix, seleniumpagesoup, headers):
     return license_details_list
 
 # Initiate the browser object with search parameters.
-browser = Browser(url=baseUrl, licenseType='Pharmacist', lastName='L')
-cookies = browser.get_browser_cookie()
+"""
+Following search parameters can be supplied to intiate search object:
 
+Example: 
+
+licenseType = "Pharmacist"
+licenseNo = "P4904"
+licenseStatus = "Active"
+firstName = "B"  # to search details of individual first name starting with B
+lastName = "L" # to search details of individual last name starting with B
+city = "Eden Prairie"
+state = "MN"
+county = "Hennepin"
+zipcode = 55347
+
+"""
+licenseType  = 'Pharmacist'
+licenseNo = None
+licenseStatus = None
+firstName = None
+lastName = "L"
+city = None
+state = None
+county = None
+zipcode = None
+
+browser = Browser(url=baseUrl, licenseType=licenseType, licenseNo=licenseNo, firstName=firstName, lastName=lastName,
+licenseStatus=licenseStatus, city=city, state=state, county=county, zipcode=zipcode
+)
+cookies = browser.get_browser_cookie()
 
 # Define header defination with cookie.
 headers = {
