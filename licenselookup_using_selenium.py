@@ -304,6 +304,7 @@ county = "Hennepin"
 zipcode = 55347
 
 """
+# Update following search parameter values as per the search requirement.
 licenseType  = 'Pharmacist'
 licenseNo = None
 licenseStatus = None
