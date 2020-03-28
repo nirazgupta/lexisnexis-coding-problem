@@ -87,8 +87,8 @@ class Browser:
     """
     Blueprint to define a browser object using selenium library.
     """
-    def __init__(self, url, licenseType=None, licenseNo=None, licenseStatus=None, firstName=None, lastName=None,
-                 city=None, state=None, county=None, zipcode=None):
+    def __init__(self, url, licenseType, licenseNo, licenseStatus, firstName, lastName,
+                 city, state, county, zipcode):
 
         option = webdriver.ChromeOptions()
         option.add_argument("--incognito")
